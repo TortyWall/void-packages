@@ -1,0 +1,22 @@
+# Template file for 'wargus'
+pkgname=wargus
+version=3.3.2
+revision=1
+
+build_style=cmake
+
+hostmakedepends="pkg-config"
+
+makedepends="stratagus-devel
+ libpng-devel
+ zlib-devel
+ bzip2-devel"
+
+depends="stratagus"
+
+short_desc="Warcraft II game importer and game files for Stratagus"
+maintainer="tortywall"
+license="GPL-2.0-only"
+homepage="https://github.com/Wargus/wargus"
+distfiles="https://github.com/Wargus/wargus/archive/refs/tags/v${version}.tar.gz"
+checksum=bb03cb6166802d1aafe39f39be6b6cf32785ae358b67071eef250448b45fd87d

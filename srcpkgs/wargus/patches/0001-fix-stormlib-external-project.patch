@@ -1,0 +1,21 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -223,6 +223,7 @@
+ 		include(ExternalProject)
+ 		message(STATUS "Will build StormLib as part of compilation.")
+ 		ExternalProject_Add(StormLib 
++                  BUILD_BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/StormLib/src/StormLib-build/libstorm.a"
+ 		  PREFIX "${CMAKE_CURRENT_BINARY_DIR}/StormLib/"
+ 		  SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/StormLib/"
+ 		  INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/StormLib/"
+@@ -230,7 +231,9 @@
+ 		  LOG_CONFIGURE ON
+ 		  LOG_BUILD ON
+ 		  LOG_OUTPUT_ON_FAILURE ON
+-		  CMAKE_ARGS -DSTORM_SKIP_INSTALL=ON
++		  CMAKE_ARGS
++                    -DSTORM_SKIP_INSTALL=ON
++                    -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+ 		  INSTALL_COMMAND ""
+ 		)
+ 		set(STORMLIB_FOUND true)

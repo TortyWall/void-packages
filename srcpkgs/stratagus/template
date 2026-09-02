@@ -1,0 +1,58 @@
+# Template file for 'stratagus'
+pkgname=stratagus
+version=3.3.2
+revision=1
+
+build_style=cmake
+
+configure_args="
+ -DCMAKE_BUILD_TYPE=Release
+ -DENABLE_DEV=ON
+ -DENABLE_DOC=OFF
+ -DENABLE_STRIP=OFF
+ -DWITH_BZIP2=ON
+ -DWITH_MNG=ON
+ -DWITH_OGGVORBIS=ON
+ -DWITH_THEORA=ON
+ -DWITH_STACKTRACE=OFF
+ -DWITH_OPENMP=OFF
+ -DGAMEDIR=/usr/bin
+ -DSBINDIR=/usr/bin
+ -DLUA_INCLUDE_DIR=/usr/include/lua5.1
+"
+
+hostmakedepends="pkg-config"
+
+makedepends="
+ lua51-devel
+ toluapp-devel
+ SDL2-devel
+ SDL2_image-devel
+ SDL2_mixer-devel
+ libpng-devel
+ zlib-devel
+ bzip2-devel
+ libmng-devel
+ libogg-devel
+ libvorbis-devel
+ libtheora-devel
+"
+
+short_desc="Strategy game engine"
+maintainer="tortywall <tortywall@localhost>"
+license="GPL-2.0-or-later"
+homepage="https://github.com/Wargus/stratagus"
+distfiles="https://github.com/Wargus/stratagus/archive/refs/tags/v${version}.tar.gz"
+checksum=55837d29bd0edadebfa2dd117da51b44b412e1d9f6ce13f7ce06e1054abe63af
+
+stratagus-devel_package() {
+	short_desc+=" - development files"
+	depends="${sourcepkg}>=${version}_${revision}"
+
+	pkg_install() {
+		vmove usr/include/stratagus-game-launcher.h
+		vmove usr/include/stratagus-gameutils.h
+		vmove usr/include/stratagus-tinyfiledialogs.h
+		vmove usr/include/stratagus-game-installer.nsi
+	}
+}

@@ -1,0 +1,55 @@
+# Template file for 's25client'
+
+pkgname=s25client
+version=0.9.8
+revision=4
+
+build_style=cmake
+
+configure_args="
+ -DCMAKE_BUILD_TYPE=Release
+ -DCMAKE_INSTALL_PREFIX=/usr
+ -DRTTR_USE_SYSTEM_LIBS=ON
+ -DRTTR_BUILD_UPDATER=OFF
+ -DBUILD_TESTING=OFF
+ -DFETCHCONTENT_FULLY_DISCONNECTED=ON
+ -DCMAKE_CXX_FLAGS=-Wno-error=cast-qual
+"
+
+hostmakedepends="
+ cmake
+ pkg-config
+ git
+ gettext
+"
+
+makedepends="
+ boost-devel
+ lua-devel
+ SDL2-devel
+ SDL2_mixer-devel
+ libcurl-devel
+ bzip2-devel
+ miniupnpc-devel
+ libsamplerate-devel
+"
+
+depends="
+ SDL2
+ SDL2_mixer
+ libcurl
+ bzip2
+ miniupnpc
+ libsamplerate
+"
+
+short_desc="Open source implementation of The Settlers II game engine"
+maintainer="tortywall"
+license="GPL-3.0-or-later"
+homepage="https://github.com/Return-To-The-Roots/s25client"
+
+do_fetch() {
+    git clone --depth 1 --recurse-submodules \
+        https://github.com/Return-To-The-Roots/s25client.git \
+        "$wrksrc"
+}
