@@ -15,7 +15,7 @@ makedepends="stratagus-devel
 depends="stratagus"
 
 short_desc="Warcraft II game importer and game files for Stratagus"
-maintainer="tortywall"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="GPL-2.0-only"
 homepage="https://github.com/Wargus/wargus"
 distfiles="https://github.com/Wargus/wargus/archive/refs/tags/v${version}.tar.gz"
