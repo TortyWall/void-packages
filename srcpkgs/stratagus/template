@@ -39,7 +39,7 @@ makedepends="
 "
 
 short_desc="Strategy game engine"
-maintainer="tortywall <tortywall@localhost>"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="GPL-2.0-or-later"
 homepage="https://github.com/Wargus/stratagus"
 distfiles="https://github.com/Wargus/stratagus/archive/refs/tags/v${version}.tar.gz"
