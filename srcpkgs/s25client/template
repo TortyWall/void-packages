@@ -2,7 +2,7 @@
 
 pkgname=s25client
 version=0.9.8
-revision=4
+revision=1
 
 build_style=cmake
 
@@ -44,7 +44,7 @@ depends="
 "
 
 short_desc="Open source implementation of The Settlers II game engine"
-maintainer="tortywall"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/Return-To-The-Roots/s25client"
 
