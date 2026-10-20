@@ -1,0 +1,27 @@
+# Template file for 'freeserf'
+
+pkgname=freeserf
+version=0.5
+revision=1
+
+build_style=cmake
+configure_args="
+ -DCMAKE_INSTALL_PREFIX=/usr/lib/freeserf
+ -DENABLE_TESTS=OFF
+ -DENABLE_SDL3_MIXER=OFF
+ -DENABLE_SOUNDFONT=OFF
+"
+
+hostmakedepends="cmake pkg-config"
+makedepends="SDL3-devel SDL3_image-devel"
+
+short_desc="Open-source clone of The Settlers 1"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="GPL-3.0-only"
+homepage="https://github.com/freeserf/freeserf"
+distfiles="https://github.com/freeserf/freeserf/archive/refs/tags/v${version}.tar.gz"
+checksum="f85a194a027ed406955f370f48c94bae98bcffacbf0b5a71f18d1962edbc844d"
+
+post_install() {
+    vbin "${FILESDIR}/freeserf"
+}
