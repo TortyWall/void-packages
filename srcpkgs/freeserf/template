@@ -8,12 +8,12 @@ build_style=cmake
 configure_args="
  -DCMAKE_INSTALL_PREFIX=/usr/lib/freeserf
  -DENABLE_TESTS=OFF
- -DENABLE_SDL3_MIXER=OFF
- -DENABLE_SOUNDFONT=OFF
+ -DENABLE_SDL3_MIXER=ON
+ -DENABLE_SOUNDFONT=ON
 "
 
 hostmakedepends="cmake pkg-config"
-makedepends="SDL3-devel SDL3_image-devel"
+makedepends="SDL3-devel SDL3_image-devel SDL3_mixer-devel"
 
 short_desc="Open-source clone of The Settlers 1"
 maintainer="Orphaned <orphan@voidlinux.org>"
