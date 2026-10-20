@@ -1,14 +1,16 @@
 # Template file for 's25client'
-
 pkgname=s25client
-version=0.9.8
+version=20261020
 revision=1
+_commit="88223144e43ca13c72d838926a2a2e2ca5aafe22"
 
 build_style=cmake
 
 configure_args="
  -DCMAKE_BUILD_TYPE=Release
  -DCMAKE_INSTALL_PREFIX=/usr
+ -DRTTR_VERSION=${version}
+ -DRTTR_REVISION=${_commit}
  -DRTTR_USE_SYSTEM_LIBS=ON
  -DRTTR_BUILD_UPDATER=OFF
  -DBUILD_TESTING=OFF
@@ -45,11 +47,14 @@ depends="
 
 short_desc="Open source implementation of The Settlers II game engine"
 maintainer="Orphaned <orphan@voidlinux.org>"
-license="GPL-3.0-or-later"
+license="GPL-2.0-or-later"
 homepage="https://github.com/Return-To-The-Roots/s25client"
 
 do_fetch() {
-    git clone --depth 1 --recurse-submodules \
+    git clone --no-checkout \
         https://github.com/Return-To-The-Roots/s25client.git \
         "$wrksrc"
+    cd "$wrksrc"
+    git checkout --detach "$_commit"
+    git submodule update --init --recursive
 }
