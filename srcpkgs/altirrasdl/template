@@ -1,0 +1,26 @@
+# Template file for 'altirrasdl'
+pkgname=altirrasdl
+version=4.50.24
+revision=1
+build_style=cmake
+configure_args="
+ -DALTIRRA_FETCH_SDL3=OFF
+ -DALTIRRA_STATIC_SDL3=OFF
+ -DALTIRRA_REQUIRE_SYSTEM_SDL3=ON
+"
+hostmakedepends="cmake pkg-config git"
+makedepends="SDL3-devel SDL3_image-devel"
+short_desc="Portable Altirra Atari 8-bit emulator"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="GPL-2.0-only"
+homepage="https://github.com/ilmenit/AltirraSDL"
+distfiles="https://github.com/ilmenit/AltirraSDL/archive/refs/heads/main.tar.gz"
+checksum="f1a9b5adb1850878c1c6ca2d5af060ae8c88e213ecd82ed353ea3ea7e61f05c9"
+
+post_install() {
+    vinstall "${FILESDIR}/altirra.desktop" 644 \
+        usr/share/applications
+
+    vinstall "${FILESDIR}/altirra.png" 644 \
+        usr/share/icons/hicolor/48x48/apps
+}
