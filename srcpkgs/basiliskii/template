@@ -1,0 +1,58 @@
+# Template file for 'basiliskii'
+pkgname=basiliskii
+version=1.1
+revision=1
+
+_gitrev="f532be3d3d70b70f272b52050ce0889a4025d624"
+wrksrc="macemu-${_gitrev}"
+build_wrksrc="BasiliskII/src/Unix"
+
+build_style=gnu-makefile
+
+hostmakedepends="autoconf automake libtool pkg-config"
+makedepends="SDL2-devel gtk+3-devel glib-devel mpfr-devel gmp-devel"
+
+short_desc="68k Macintosh emulator"
+maintainer="Void Linux package maintainer"
+license="GPL-2.0-only"
+homepage="https://github.com/kanjitalk755/macemu"
+
+distfiles="https://github.com/kanjitalk755/macemu/archive/${_gitrev}.tar.gz"
+checksum="dc987af49d9664c3c0453ae6480b8c027d064b8881d39dd7b701e35d1399687e"
+
+nopie_files="/usr/bin/BasiliskII"
+
+do_configure() {
+    ./autogen.sh
+
+    SDL2_CFLAGS="$(pkg-config --cflags sdl2)"
+    GTK3_CFLAGS="$(pkg-config --cflags gtk+-3.0)"
+
+    CFLAGS="${CFLAGS} -fPIE" \
+    CXXFLAGS="${CXXFLAGS} -fPIE ${SDL2_CFLAGS} ${GTK3_CFLAGS}" \
+    LDFLAGS="${LDFLAGS} -pie -rdynamic" \
+        ./configure \
+        --enable-sdl-video \
+        --enable-sdl-audio \
+        --with-gtk=3
+}
+
+do_build() {
+    SDL2_CFLAGS="$(pkg-config --cflags sdl2)"
+    GTK3_CFLAGS="$(pkg-config --cflags gtk+-3.0)"
+
+    make \
+        CFLAGS="${CFLAGS} -fPIE" \
+        CXXFLAGS="${CXXFLAGS} -fPIE ${SDL2_CFLAGS} ${GTK3_CFLAGS}" \
+        LDFLAGS="${LDFLAGS} -pie -rdynamic"
+}
+
+do_install() {
+    vbin BasiliskII
+
+    vinstall "${wrksrc}/BasiliskII/dist/freedesktop/io.github.kanjitalk755.macemu.basilisk.desktop" \
+        644 usr/share/applications
+
+    vinstall "${wrksrc}/BasiliskII/dist/freedesktop/io.github.kanjitalk755.macemu.basilisk.svg" \
+        644 usr/share/icons/hicolor/scalable/apps
+}
