@@ -13,7 +13,7 @@ hostmakedepends="autoconf automake libtool pkg-config"
 makedepends="SDL2-devel gtk+3-devel glib-devel mpfr-devel gmp-devel"
 
 short_desc="68k Macintosh emulator"
-maintainer="Void Linux package maintainer"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="GPL-2.0-only"
 homepage="https://github.com/kanjitalk755/macemu"
 
