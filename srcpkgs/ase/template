@@ -1,0 +1,146 @@
+# Template file for 'ase'
+pkgname=ase
+version=1.14
+revision=1
+short_desc="Atari ST, Mega ST and STE emulator"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="GPL-3.0-only"
+homepage="https://github.com/thebitculture/ase"
+distfiles="https://github.com/thebitculture/ase/archive/refs/tags/v${version}.tar.gz"
+checksum="d459928add0689cd16eca337f8b731093ba043e4a6f9e5be86de52dca402b500"
+
+# Build-only dependencies. The .NET SDK is downloaded locally.
+hostmakedepends="curl tar libicu78"
+
+# Native runtime dependencies.
+depends="SDL2 libvlc"
+
+do_build() {
+    # Restore Git LFS objects omitted from the GitHub source archive.
+    # Search the entire source tree, including Art/icon.png.
+    lfs_list="$wrksrc/.lfs-files"
+    find "$wrksrc" -type f \
+        -exec grep -l \
+        '^version https://git-lfs.github.com/spec/v1$' {} \; \
+        > "$lfs_list"
+
+    while IFS= read -r file; do
+        [ -n "$file" ] || continue
+
+        oid=$(sed -n 's/^oid sha256://p' "$file")
+        [ -n "$oid" ] || \
+            msg_error "Missing Git LFS SHA-256 OID: $file"
+
+        relpath=${file#"$wrksrc/"}
+        tmpfile="$file.lfs-download"
+
+        msg_normal "Downloading Git LFS object: $relpath"
+
+        curl -fL \
+            "https://media.githubusercontent.com/media/thebitculture/ase/v${version}/${relpath}" \
+            -o "$tmpfile"
+
+        printf '%s  %s\n' "$oid" "$tmpfile" |
+            sha256sum -c - || {
+                rm -f "$tmpfile"
+                msg_error "Git LFS SHA-256 verification failed: $relpath"
+            }
+
+        mv "$tmpfile" "$file"
+    done < "$lfs_list"
+
+    # Select the SDK architecture and runtime identifier.
+    dotnet_version=10.0.100
+
+    case "$XBPS_TARGET_MACHINE" in
+        aarch64)
+            dotnet_arch=arm64
+            dotnet_rid=linux-arm64
+            dotnet_sdk_sha512="24fc2b105ab8484c34213ef57ac4e6a36a6593241f0ebc6cf0a40ec2f5fea2d76de85c4b87b2a53814d194e32ec1288dd5053cd6f52768d79cd0ac948cbf84ea"
+            ;;
+        x86_64)
+            dotnet_arch=x64
+            dotnet_rid=linux-x64
+            dotnet_sdk_sha512="f78dbac30c9af2230d67ff5c224de3a5dbf63f8a78d1c206594dedb80e6909d2cc8a9d865d5105c72c2fd2aa266fc0c6c77dedac60408cbccf272b116bd11b07"
+            ;;
+        *)
+            msg_error "Unsupported architecture: $XBPS_TARGET_MACHINE"
+            ;;
+    esac
+
+    # Download and verify the .NET SDK.
+    dotnet_dir="$wrksrc/.dotnet"
+    sdk_archive="$wrksrc/dotnet-sdk.tar.gz"
+
+    mkdir -p "$dotnet_dir"
+
+    curl -fL \
+        "https://builds.dotnet.microsoft.com/dotnet/Sdk/${dotnet_version}/dotnet-sdk-${dotnet_version}-linux-${dotnet_arch}.tar.gz" \
+        -o "$sdk_archive"
+
+    printf '%s  %s\n' "$dotnet_sdk_sha512" "$sdk_archive" |
+        sha512sum -c - || {
+            rm -f "$sdk_archive"
+            msg_error "SDK SHA-512 verification failed"
+        }
+
+    tar -xzf "$sdk_archive" -C "$dotnet_dir"
+    rm -f "$sdk_archive"
+
+    # Keep SDK and NuGet state inside the build directory.
+    export DOTNET_ROOT="$dotnet_dir"
+    export PATH="$DOTNET_ROOT:$PATH"
+    export DOTNET_CLI_HOME="$wrksrc/.dotnet-home"
+    export NUGET_PACKAGES="$wrksrc/.nuget/packages"
+    export DOTNET_NOLOGO=1
+    export DOTNET_CLI_TELEMETRY_OPTOUT=1
+
+    cd "$wrksrc/ASE"
+
+    dotnet publish ASE.csproj \
+        --configuration Release \
+        --runtime "$dotnet_rid" \
+        --self-contained true \
+        -p:PublishSingleFile=false \
+        -p:DebugType=None \
+        -p:DebugSymbols=false \
+        --output "$wrksrc/publish"
+}
+
+do_install() {
+    # Install the application and bundled .NET runtime.
+    vmkdir usr/lib/ase
+    cp -a "$wrksrc/publish/." "$DESTDIR/usr/lib/ase/"
+
+    # Command-line launcher.
+    vmkdir usr/bin
+    cat > "$DESTDIR/usr/bin/ase" <<'EOF'
+#!/bin/sh
+exec /usr/lib/ase/ASE "$@"
+EOF
+    chmod 755 "$DESTDIR/usr/bin/ase"
+
+    # Install upstream application icon (512x512).
+    icon_dir="usr/share/icons/hicolor/512x512/apps"
+    vmkdir "$icon_dir"
+    vinstall "$wrksrc/Art/icon.png" 644 "$icon_dir"
+    mv "$DESTDIR/$icon_dir/icon.png" "$DESTDIR/$icon_dir/ase.png"
+
+    # Desktop integration.
+    vmkdir usr/share/applications
+    cat > "$DESTDIR/usr/share/applications/ase.desktop" <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=ASE
+GenericName=Atari ST Emulator
+Comment=Emulate Atari ST, Mega ST and STE computers
+Exec=ase
+Icon=ase
+Terminal=false
+Categories=Game;Emulator;
+StartupNotify=true
+EOF
+
+    # Install the upstream license.
+    vlicense "$wrksrc/LICENSE"
+}
