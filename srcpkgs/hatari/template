@@ -1,0 +1,15 @@
+# Template file for 'hatari'
+pkgname=hatari
+version=2.5.0
+revision=1
+build_style=cmake
+hostmakedepends="pkg-config python3"
+makedepends="SDL2-devel libpng-devel portaudio-devel zlib-devel"
+depends="hicolor-icon-theme"
+short_desc="Atari ST/STE/TT/Falcon emulator"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="GPL-2.0-or-later"
+homepage="http://hatari.tuxfamily.org/"
+distfiles="http://download.tuxfamily.org/${pkgname}/${version}/${pkgname}-${version}.tar.bz2"
+checksum=d76c22fc3de69fb1bb4af3e8ba500b7e40f5a2a45d07783f24cb7101e53c3457
+python_version=3
