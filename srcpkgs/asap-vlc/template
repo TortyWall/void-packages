@@ -1,0 +1,35 @@
+# Template file for 'asap-vlc'
+pkgname=asap-vlc
+version=8.0.1
+revision=1
+_commit=36275b2913ab6dabe33d177a0e31f941a3ec797a
+wrksrc="asap-${_commit}"
+build_style=gnu-makefile
+hostmakedepends="make pkg-config"
+makedepends="vlc-devel"
+depends="vlc"
+short_desc="ASAP Atari music demuxer plugin for VLC"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="GPL-2.0-or-later"
+homepage="https://github.com/pfusik/asap"
+distfiles="https://github.com/pfusik/asap/archive/${_commit}.tar.gz"
+checksum="f54dff9d38a978c098ed410ce0293b2583d2b3593f147561e413431f676c657c"
+
+do_build() {
+    make -o asap.c -o asap.h \
+        CC="${CC}" \
+        CFLAGS="${CFLAGS}" \
+        CPPFLAGS="${CPPFLAGS}" \
+        LDFLAGS="${LDFLAGS}" \
+        asap-vlc
+}
+
+do_install() {
+    make -o asap.c -o asap.h \
+        CC="${CC}" \
+        CFLAGS="${CFLAGS}" \
+        CPPFLAGS="${CPPFLAGS}" \
+        LDFLAGS="${LDFLAGS}" \
+        DESTDIR="${DESTDIR}" \
+        install-vlc
+}
