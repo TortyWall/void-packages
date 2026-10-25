@@ -1,0 +1,70 @@
+# Template file for electron44-bin
+pkgname=electron44-bin
+version=44.9.3
+revision=1
+archs="x86_64 aarch64"
+
+_desc="Electron runtime built with web technologies (prebuilt)"
+short_desc="${_desc}"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="MIT"
+homepage="https://electronjs.org"
+
+depends="alsa-lib gtk+3 nss"
+hostmakedepends="unzip"
+
+case "$XBPS_TARGET_MACHINE" in
+    x86_64*)
+        _electron_arch="x64"
+        _checksum_electron="6e7fd2d450d442507b846ace4ae6e2bd17e1b1653e86a033b5231abfc23e6df4"
+        _checksum_chromedriver="3bc92381261d31254d3921a15015bde389ce65c8a1c475d7f2dcad524e13e1b0"
+        ;;
+    aarch64*)
+        _electron_arch="arm64"
+        _checksum_electron="8e70d53d920d84db869023280e5a1fbda82ecc58fea4443748e58309a3c80238"
+        _checksum_chromedriver="46e021041db497176ab792e4d214c92637ee44086b76e6b453a04fff28feffd5"
+        ;;
+    *)
+        broken="Unsupported architecture: ${XBPS_TARGET_MACHINE}"
+        ;;
+esac
+
+_electron_zip="electron-v${version}-linux-${_electron_arch}.zip"
+_chromedriver_zip="chromedriver-v${version}-linux-${_electron_arch}.zip"
+
+distfiles="
+ https://github.com/electron/electron/releases/download/v${version}/${_electron_zip}
+ https://github.com/electron/electron/releases/download/v${version}/${_chromedriver_zip}
+"
+
+checksum="
+ ${_checksum_electron}
+ ${_checksum_chromedriver}
+"
+
+skip_extraction="${_electron_zip} ${_chromedriver_zip}"
+
+do_extract() {
+    mkdir -p "${wrksrc}/electron44"
+
+    unzip -q "${XBPS_SRCDISTDIR}/${pkgname}-${version}/${_electron_zip}" \
+        -d "${wrksrc}/electron44"
+
+    unzip -q "${XBPS_SRCDISTDIR}/${pkgname}-${version}/${_chromedriver_zip}" \
+        -d "${wrksrc}/electron44"
+}
+
+do_install() {
+    vmkdir usr/lib/electron44
+    vcopy "${wrksrc}/electron44/." usr/lib/electron44
+
+    vmkdir usr/bin
+    vinstall "${FILESDIR}/electron44" 0755 usr/bin
+
+    if [ -f "${DESTDIR}/usr/lib/electron44/chrome-sandbox" ]; then
+        chmod 4755 "${DESTDIR}/usr/lib/electron44/chrome-sandbox"
+    fi
+
+    vmkdir usr/share/licenses/${pkgname}
+    vlicense "${wrksrc}/electron44/LICENSE" LICENSE
+}
