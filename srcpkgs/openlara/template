@@ -34,4 +34,10 @@ cd "$data"
 exec /usr/libexec/openlara/OpenLara "$@"
 EOF
     chmod 755 "${DESTDIR}/usr/bin/OpenLara"
+
+	vinstall "${FILESDIR}/openlara.desktop" 644 \
+	usr/share/applications
+
+    vinstall "${FILESDIR}/openlara.png" 644 \
+	usr/share/icons/hicolor/192x192/apps openlara.png
 }
