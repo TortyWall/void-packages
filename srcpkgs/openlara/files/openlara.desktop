@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=OpenLara
+Comment=Open-source engine for classic Tomb Raider
+Exec=OpenLara
+Icon=openlara
+Terminal=false
+Categories=Game;ActionGame;
+StartupNotify=false
