@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Return To The Roots
+GenericName=The Settlers II Engine
+Comment=Open source implementation of The Settlers II
+Exec=s25client
+Icon=s25client
+Terminal=false
+Categories=Game;StrategyGame;
+StartupNotify=true

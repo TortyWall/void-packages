@@ -43,6 +43,7 @@ depends="
  bzip2
  miniupnpc
  libsamplerate
+ hicolor-icon-theme
 "
 
 short_desc="Open source implementation of The Settlers II game engine"
@@ -57,4 +58,12 @@ do_fetch() {
     cd "$wrksrc"
     git checkout --detach "$_commit"
     git submodule update --init --recursive
+}
+
+post_install() {
+    vinstall "${FILESDIR}/s25client.desktop" 644 \
+        usr/share/applications
+
+    vinstall "${FILESDIR}/s25client.png" 644 \
+        usr/share/icons/hicolor/48x48/apps
 }
