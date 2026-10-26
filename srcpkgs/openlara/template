@@ -1,0 +1,37 @@
+# Template file for 'openlara'
+pkgname=openlara
+version=20260726
+revision=1
+_commit=3b268ca4bf986c380f44a26ffd9218bf6d376249
+
+wrksrc="OpenLara-${_commit}"
+hostmakedepends="pkg-config clang"
+makedepends="SDL2-devel libglvnd-devel MesaLib-devel"
+
+short_desc="Open-source engine for classic Tomb Raider"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="BSD-2-Clause"
+homepage="https://github.com/XProger/OpenLara"
+distfiles="https://github.com/XProger/OpenLara/archive/${_commit}.tar.gz"
+checksum=ad9b3b2616191b19c4a65b4b926a4e061d553b22ef11e6f8d9ad85680a26d4a9
+
+do_build() {
+    cd src/platform/sdl2
+    ./build.sh
+}
+
+do_install() {
+    vinstall src/platform/sdl2/OpenLara 755 \
+        usr/libexec/openlara OpenLara
+
+    mkdir -p "${DESTDIR}/usr/bin"
+    cat > "${DESTDIR}/usr/bin/OpenLara" <<'EOF'
+#!/bin/sh
+set -e
+data="${XDG_DATA_HOME:-$HOME/.local/share}/openlara"
+mkdir -p "$data"
+cd "$data"
+exec /usr/libexec/openlara/OpenLara "$@"
+EOF
+    chmod 755 "${DESTDIR}/usr/bin/OpenLara"
+}
