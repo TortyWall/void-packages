@@ -1,8 +1,8 @@
 # Template file for 's25client'
 pkgname=s25client
-version=20261020
+version=20261024
 revision=1
-_commit="88223144e43ca13c72d838926a2a2e2ca5aafe22"
+_commit="f23666865bbd927ebf25f83b32bd8c89a47e014f"
 
 build_style=cmake
 
