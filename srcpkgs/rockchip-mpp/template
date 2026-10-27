@@ -1,0 +1,39 @@
+# Template file for 'rockchip-mpp'
+pkgname=rockchip-mpp
+version=1.1.0
+revision=1
+build_style=cmake
+configure_args="
+ -DCMAKE_BUILD_TYPE=Release
+ -DRKPLATFORM=ON
+ -DHAVE_DRM=ON
+ -DBUILD_TEST=OFF
+ -DCMAKE_INSTALL_LIBDIR=lib
+"
+hostmakedepends="cmake pkg-config"
+makedepends="libdrm-devel"
+short_desc="Rockchip Media Process Platform"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="Apache-2.0"
+homepage="https://github.com/rockchip-linux/mpp"
+distfiles="https://github.com/rockchip-linux/mpp/archive/refs/tags/${version}.tar.gz"
+checksum=7bb0040f364468ad9abbb71a04553ebc6a5814584e083c2fc9a553783e9656df
+
+subpackages="rockchip-mpp-devel"
+
+rockchip-mpp-devel_package() {
+    short_desc+=" - development files"
+    depends="${sourcepkg}>=${version}_${revision}"
+    depends+=" libdrm-devel"
+
+    pkg_install() {
+        vmove usr/include
+        vmove usr/lib/pkgconfig
+        vmove "usr/lib/*.so"
+        vmove usr/lib/librockchip_mpp.a
+    }
+}
+
+post_install() {
+    vlicense LICENSES/Apache-2.0
+}
