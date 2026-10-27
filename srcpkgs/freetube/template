@@ -1,0 +1,37 @@
+# Template file for 'freetube'
+pkgname=freetube
+version=0.25.3
+revision=1
+_electronver=42
+archs="x86_64 aarch64"
+hostmakedepends="pnpm"
+depends="electron${_electronver}-bin"
+short_desc="Open source desktop YouTube player built with privacy in mind"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="AGPL-3.0-only"
+homepage="https://freetubeapp.io/"
+changelog="https://github.com/FreeTubeApp/FreeTube/releases/"
+distfiles="https://github.com/FreeTubeApp/FreeTube/archive/refs/tags/v${version}-beta.tar.gz"
+checksum="70fdf96406ca699d1919d189efe8e8ec901c88a6721e40a4cce6770ffbc3409b"
+
+pre_build() {
+    pnpm install --frozen-lockfile
+}
+
+do_build() {
+    pnpm run build
+}
+
+do_install() {
+    vmkdir usr/lib/${pkgname}
+    vcopy build/linux-unpacked/resources usr/lib/${pkgname}
+
+    sed "s/@electronver@/${_electronver}/g" \
+        ${FILESDIR}/${pkgname}.sh > ${TMPDIR}/${pkgname}.sh
+    vbin ${TMPDIR}/${pkgname}.sh ${pkgname}
+
+    vinstall ${FILESDIR}/${pkgname}.desktop 644 usr/share/applications
+    vinstall _icons/icon.svg 644 usr/share/pixmaps ${pkgname}.svg
+
+    vlicense LICENSE
+}
