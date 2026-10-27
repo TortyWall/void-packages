@@ -29,7 +29,8 @@ rockchip-mpp-devel_package() {
     pkg_install() {
         vmove usr/include
         vmove usr/lib/pkgconfig
-        vmove "usr/lib/*.so"
+        vmove usr/lib/librockchip_mpp.so
+        vmove usr/lib/librockchip_vpu.so
         vmove usr/lib/librockchip_mpp.a
     }
 }
