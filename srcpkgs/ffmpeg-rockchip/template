@@ -1,0 +1,55 @@
+# Template file for 'ffmpeg-rockchip'
+pkgname=ffmpeg-rockchip
+version=8.1.3
+revision=1
+
+_commit=b187bf527644cb7b1ee924a019bfd24602da67eb
+
+build_style=configure
+hostmakedepends="pkg-config perl"
+makedepends="
+ rockchip-mpp-devel libdrm-devel
+ zlib-devel bzip2-devel freetype-devel alsa-lib-devel
+ libXfixes-devel libXext-devel libXvMC-devel libxcb-devel
+ lame-devel libtheora-devel libvorbis-devel x264-devel
+ xvidcore-devel jack-devel SDL2-devel libsoxr-devel
+ libcdio-paranoia-devel librtmp-devel libopenmpt-devel
+ gnutls-devel speex-devel celt-devel harfbuzz-devel
+ libass-devel opus-devel ocl-icd-devel libbs2b-devel
+ libvidstab-devel vmaf-devel libbluray-devel
+ libvpx-devel libaom-devel libdav1d-devel libwebp-devel
+ srt-devel librist-devel vulkan-loader-devel zimg-devel
+ libmysofa-devel libsvt-av1-devel libjxl-devel x265-devel
+ v4l-utils-devel pulseaudio-devel"
+depends="rockchip-mpp>=1.1.0_1"
+short_desc="FFmpeg with Rockchip MPP hardware decoding"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="GPL-3.0-or-later"
+homepage="https://github.com/nyanmisaka/ffmpeg-rockchip"
+distfiles="https://github.com/nyanmisaka/ffmpeg-rockchip/archive/${_commit}.tar.gz"
+checksum=79985cd90bd4e5f43ed9b1be4986fd38012d0b333641e55309eb029866e09fb6
+
+do_configure() {
+    ./configure \
+        --prefix=/opt/ffmpeg-rockchip \
+        --libdir=/opt/ffmpeg-rockchip/lib \
+        --incdir=/opt/ffmpeg-rockchip/include \
+        --pkgconfigdir=/opt/ffmpeg-rockchip/lib/pkgconfig \
+        --enable-shared \
+        --disable-static \
+        --disable-debug \
+        --disable-stripping \
+        --enable-gpl \
+        --enable-version3 \
+        --enable-libdrm \
+        --enable-rkmpp \
+        --extra-ldexeflags="-Wl,-rpath,/opt/ffmpeg-rockchip/lib"
+}
+
+do_build() {
+    make ${makejobs}
+}
+
+do_install() {
+    make DESTDIR="${DESTDIR}" install
+}
