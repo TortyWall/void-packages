@@ -11,7 +11,6 @@ The rockchip-vaapi driver links against the Rockchip MPP shared libraries. Void 
 
 Ensure that the following entries exist in common/shlibs:
 
-text
 librockchip_mpp.so.1 rockchip-mpp-1.1.0_1
 librockchip_vpu.so.1 rockchip-mpp-1.1.0_1
 
