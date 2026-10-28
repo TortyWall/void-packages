@@ -1,0 +1,34 @@
+# Template file for 'rockchip-vaapi'
+pkgname=rockchip-vaapi
+version=1.0.12
+revision=1
+archs="aarch64"
+
+build_style=gnu-makefile
+
+hostmakedepends="pkg-config"
+makedepends="libva-devel rockchip-mpp-devel"
+depends="libva rockchip-mpp"
+
+short_desc="Rockchip VA-API driver using MPP"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="LGPL-2.1-or-later"
+homepage="https://github.com/woodyst/rockchip-vaapi"
+distfiles="https://github.com/woodyst/rockchip-vaapi/archive/refs/tags/v${version}.tar.gz"
+checksum=34b1573940ec0606bfd0e0f5fbedb6864d732592f5c7661bc794b82b2e70fa63
+
+do_build() {
+    make \
+        CC="$CC" \
+        CFLAGS="$CFLAGS -fPIC" \
+        LDFLAGS="$LDFLAGS -shared -lva -lrockchip_mpp -lpthread -ldl" \
+        PREFIX=/usr \
+        prefix=/usr \
+        ${makejobs} \
+        ${make_build_target}
+}
+
+do_install() {
+    vinstall rockchip_drv_video.so 755 usr/lib/dri
+    vlicense LICENSE
+}
