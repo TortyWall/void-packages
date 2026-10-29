@@ -1,9 +1,9 @@
 # Template file for 'ffmpeg-rockchip'
 pkgname=ffmpeg-rockchip
-version=8.1.3
+version=9.0.2
 revision=1
 
-_commit=b187bf527644cb7b1ee924a019bfd24602da67eb
+_commit=e6fd228e1e2be00f9a4e1f003b287a72d252a55d
 
 build_style=configure
 hostmakedepends="pkg-config perl"
@@ -27,7 +27,7 @@ maintainer="Orphaned <orphan@voidlinux.org>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/nyanmisaka/ffmpeg-rockchip"
 distfiles="https://github.com/nyanmisaka/ffmpeg-rockchip/archive/${_commit}.tar.gz"
-checksum=79985cd90bd4e5f43ed9b1be4986fd38012d0b333641e55309eb029866e09fb6
+checksum=9fcd2f4a35ef62c034477435a62ec67a6a0364a9875eb839a46bbb8f747fcc7c
 
 do_configure() {
     ./configure \
@@ -52,4 +52,16 @@ do_build() {
 
 do_install() {
     make DESTDIR="${DESTDIR}" install
+}
+
+ffmpeg-rockchip-devel_package() {
+    depends="${sourcepkg}>=${version}_${revision}"
+    short_desc+=" - development files"
+
+    pkg_install() {
+        vmove opt/ffmpeg-rockchip/include
+        vmove opt/ffmpeg-rockchip/lib/pkgconfig
+        vmove opt/ffmpeg-rockchip/lib/*.so
+        vmove opt/ffmpeg-rockchip/share/ffmpeg/examples
+    }
 }
