@@ -3,7 +3,6 @@ pkgname=rkrga
 version=1.10.4
 revision=1
 
-# Hier einen festen Commit des jellyfin-rga-Branches eintragen.
 _commit="1d330cc28551943bed3380261a5a9c6fbd58ff53"
 
 build_style=meson
