@@ -1,0 +1,40 @@
+# Template file for 'rkrga'
+pkgname=rkrga
+version=1.10.4
+revision=1
+
+# Hier einen festen Commit des jellyfin-rga-Branches eintragen.
+_commit="1d330cc28551943bed3380261a5a9c6fbd58ff53"
+
+build_style=meson
+configure_args="
+ --buildtype=release
+ --default-library=shared
+ -Dcpp_args=-fpermissive
+ -Dlibdrm=false
+ -Dlibrga_demo=false
+"
+hostmakedepends="
+ meson
+ ninja
+ pkg-config
+"
+makedepends=""
+
+short_desc="Rockchip RGA userspace library"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="Apache-2.0"
+homepage="https://github.com/nyanmisaka/rk-mirrors"
+distfiles="https://github.com/nyanmisaka/rk-mirrors/archive/${_commit}.tar.gz"
+checksum="30bd712507fcc6be075cd4aaa2622d46fde203fa6f3418b85d0fc1e2136b8ec4"
+
+rkrga-devel_package() {
+    depends="${sourcepkg}>=${version}_${revision}"
+    short_desc+=" - development files"
+
+    pkg_install() {
+        vmove usr/include
+        vmove usr/lib/pkgconfig
+        vmove usr/lib/*.so
+    }
+}
