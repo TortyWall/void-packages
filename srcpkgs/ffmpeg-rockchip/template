@@ -8,7 +8,7 @@ _commit=e6fd228e1e2be00f9a4e1f003b287a72d252a55d
 build_style=configure
 hostmakedepends="pkg-config perl"
 makedepends="
- rockchip-mpp-devel libdrm-devel
+ rockchip-mpp-devel rkrga-devel libdrm-devel
  zlib-devel bzip2-devel freetype-devel alsa-lib-devel
  libXfixes-devel libXext-devel libXvMC-devel libxcb-devel
  lame-devel libtheora-devel libvorbis-devel x264-devel
@@ -21,7 +21,7 @@ makedepends="
  srt-devel librist-devel vulkan-loader-devel zimg-devel
  libmysofa-devel libsvt-av1-devel libjxl-devel x265-devel
  v4l-utils-devel pulseaudio-devel"
-depends="rockchip-mpp>=1.1.0_1"
+depends="rockchip-mpp>=1.1.0_1 rkrga"
 short_desc="FFmpeg with Rockchip MPP hardware decoding"
 maintainer="Orphaned <orphan@voidlinux.org>"
 license="GPL-3.0-or-later"
@@ -43,6 +43,7 @@ do_configure() {
         --enable-version3 \
         --enable-libdrm \
         --enable-rkmpp \
+        --enable-rkrga \
         --extra-ldexeflags="-Wl,-rpath,/opt/ffmpeg-rockchip/lib"
 }
 
