@@ -1,15 +1,29 @@
 # Template file for 'dissent'
 pkgname=dissent
-version=0.0.37
+version=0.0.41
 revision=1
-archs="aarch64"
-depends="gtk4"
+wrksrc="${XBPS_BUILDDIR}"
+archs="aarch64 x86_64"
+
+case "$XBPS_TARGET_MACHINE" in
+    aarch64)
+        _arch="arm64"
+        checksum="6e039d69043fc64520f6ce63b3ff378abe0c0b07f84dbd38d9243f5748e6588b"
+        ;;
+    x86_64)
+        _arch="amd64"
+        checksum="eb6003d8c2d1b5c28d337279b6abc061e4707900b5e634220e820ba373b901f1"
+        ;;
+esac
+
+depends="gtk4 gtksourceview5"
+nopie_files="/usr/bin/dissent"
 short_desc="Native GTK4 Discord client"
 maintainer="Orphaned <orphan@voidlinux.org>"
 license="GPL-3.0-only"
 homepage="https://github.com/diamondburned/dissent"
-distfiles="https://github.com/diamondburned/dissent/releases/download/v${version}/dissent-linux-arm64.tar.zst"
-checksum="006aefb8e7396616323fc35d43902da33de39834237fbaf02455c06e28e21ea5"
+
+distfiles="https://github.com/diamondburned/dissent/releases/download/v${version}/dissent-linux-${_arch}.tar.zst"
 
 do_install() {
     vbin bin/dissent
