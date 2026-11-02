@@ -1,0 +1,98 @@
+# Template file for 'kappastream'
+pkgname=kappastream
+version=1.0.8
+revision=1
+wrksrc="kappastream-${version}"
+
+hostmakedepends="
+ nodejs
+ rust
+ cargo
+ pkg-config
+ cmake
+ perl
+"
+
+makedepends="
+ libwebkit2gtk41-devel
+ gtk+3-devel
+ libsoup3-devel
+ librsvg-devel
+ libayatana-appindicator-devel
+ mpv-devel
+"
+
+depends="
+ streamlink
+ mpv
+ libwebkit2gtk41
+ hicolor-icon-theme
+ libayatana-appindicator
+"
+
+short_desc="Anonymous Twitch viewer for Linux"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="GPL-3.0-only"
+homepage="https://github.com/kappy7777/kappastream"
+
+distfiles="https://github.com/kappy7777/kappastream/archive/refs/tags/v${version}.tar.gz"
+checksum="39651a119c9d29a03e7a72d68343b1050d328b27e84b285598a49b01fa34c882"
+
+do_build() {
+    export CARGO_HOME="${wrksrc}/.cargo-home"
+
+    # Frontend
+    npm ci --no-audit --no-fund
+    npm run build
+
+    # Native Tauri application
+    cd src-tauri
+
+    unset CFLAGS CXXFLAGS LDFLAGS RUSTFLAGS
+    export AWS_LC_SYS_USE_SYSTEM=0
+
+    cargo build --release --locked \
+        --no-default-features \
+        --features "mpv-embed,tauri/custom-protocol"
+}
+
+do_install() {
+    # Application binary
+    vinstall src-tauri/target/release/kappastream \
+        755 usr/lib/kappastream
+
+    # Launcher
+    vinstall packaging/shared/kappastream.sh \
+        755 usr/bin kappastream
+
+    # Icons
+    vinstall src-tauri/icons/32x32.png \
+        644 usr/share/icons/hicolor/32x32/apps \
+        kappastream.png
+
+    vinstall src-tauri/icons/64x64.png \
+        644 usr/share/icons/hicolor/64x64/apps \
+        kappastream.png
+
+    vinstall src-tauri/icons/128x128.png \
+        644 usr/share/icons/hicolor/128x128/apps \
+        kappastream.png
+
+    vinstall src-tauri/icons/128x128@2x.png \
+        644 usr/share/icons/hicolor/256x256/apps \
+        kappastream.png
+
+    vinstall src-tauri/icons/icon.png \
+        644 usr/share/icons/hicolor/512x512/apps \
+        kappastream.png
+
+    # Desktop integration
+    vinstall packaging/shared/kappastream.desktop \
+        644 usr/share/applications
+
+    # AppStream metadata
+    vinstall packaging/shared/dev.kappy.kappastream.metainfo.xml \
+        644 usr/share/metainfo
+
+    vlicense LICENSE
+}
