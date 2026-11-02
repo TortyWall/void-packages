@@ -1,0 +1,43 @@
+# Template file for 'twitch'
+pkgname=twitch
+version=1.0.9
+revision=1
+archs="x86_64 aarch64"
+
+short_desc="Unofficial Twitch desktop application"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="GPL-3.0-only"
+homepage="https://gitlab.com/linuxbombay/twitch-application"
+
+depends="alsa-lib gtk+3 nss"
+hostmakedepends="tar"
+
+_commit="ba6a04a85713b911ecfbd31a45c2b8f0a3c03c3a"
+
+case "$XBPS_TARGET_MACHINE" in
+	x86_64)
+		_arch=x64
+		checksum="f06c0fca72a9ab269bff0417934c07f4395e12bc7a46a45e15a7cc6e67db2f9c"
+		;;
+	aarch64)
+		_arch=arm64
+		checksum="d7b47a5cf1381e2cada1f60f3b697ad9bfc8b8cde76ee472e83778b02f8b6a31"
+		;;
+esac
+
+wrksrc="Twitch-linux-${_arch}"
+
+distfiles="https://gitlab.com/linuxbombay/twitch-application/binaries/1.0.9/-/raw/${_commit}/Twitch-linux-${_arch}.tar.xz"
+
+do_install() {
+	vmkdir opt/twitch
+	vcopy "${wrksrc}/." opt/twitch/
+
+	vbin "${FILESDIR}/twitch"
+
+	vinstall "${FILESDIR}/twitch.desktop" 644 \
+		usr/share/applications
+
+	vinstall "${FILESDIR}/twitch.svg" 644 \
+		usr/share/icons/hicolor/scalable/apps twitch.svg
+}
