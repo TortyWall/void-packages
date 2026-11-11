@@ -7,7 +7,7 @@ build_style=cmake
 
 configure_args="
  -DBUILD_TESTING=OFF
- -DWITH_EMBEDDED_DB=OFF
+ -DWITH_EMBEDDED_DB=ON
  -DWITH_IPOD=OFF
  -DWITH_DAAP=OFF
  -DWITH_GPODDER=OFF
@@ -57,6 +57,10 @@ makedepends="
  kf6-threadweaver-devel
  kf6-kwidgetsaddons-devel
  kf6-kwindowsystem-devel
+"
+
+depends="
+ libmariadbclient
 "
 
 short_desc="Powerful music player and collection manager"
