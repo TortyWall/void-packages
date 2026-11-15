@@ -1,0 +1,67 @@
+# Template file for 'amiberry'
+pkgname=amiberry
+version=8.5.0
+revision=1
+build_style=cmake
+build_options="opengl vulkan optimize lto"
+build_options_default="opengl optimize lto"
+configure_args="
+ -DCMAKE_BUILD_TYPE=Release
+ -DCMAKE_INSTALL_PREFIX=/usr
+ -DUSE_OPENGL=$(vopt_if opengl ON OFF)
+ -DUSE_VULKAN=$(vopt_if vulkan ON OFF)
+ -DWITH_OPTIMIZE=$(vopt_if optimize ON OFF)
+ -DWITH_LTO=$(vopt_if lto ON OFF)
+"
+hostmakedepends="
+ cmake
+ pkg-config
+"
+makedepends="
+ SDL3-devel
+ SDL3_image-devel
+ SDL3_image
+ libflac-devel
+ mpg123-devel
+ libpng-devel
+ libmpeg2-devel
+ libserialport-devel
+ portmidi-devel
+ libenet-devel
+ libpcap-devel
+ libzstd-devel
+ libcurl-devel
+ ffmpeg-devel
+ libwebp-devel
+ nlohmann-json
+"
+
+short_desc="Optimized Amiga emulator"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="GPL-3.0-or-later"
+homepage="https://amiberry.com/"
+distfiles="https://github.com/BlitterStudio/amiberry/archive/refs/tags/v${version}.tar.gz"
+
+# Replace with the verified SHA256 before submission.
+checksum="eb965f393a380a070791129f088de9d97f19a398ad177f77cf75d3a767d91b29"
+
+# Optional graphics and optimization features
+build_options="opengl vulkan optimize lto"
+build_options_default="opengl optimize lto"
+
+desc_option_opengl="Enable OpenGL renderer"
+desc_option_vulkan="Enable experimental Vulkan renderer"
+desc_option_optimize="Enable CPU-specific optimizations"
+desc_option_lto="Enable Link Time Optimization"
+
+if [ "$build_option_opengl" ] && [ "$build_option_vulkan" ]; then
+	msg_error "$pkgname: opengl and vulkan are mutually exclusive.\n"
+fi
+
+if [ "$build_option_opengl" ]; then
+	makedepends+=" libglvnd-devel"
+fi
+
+if [ "$build_option_vulkan" ]; then
+	makedepends+=" vulkan-loader-devel"
+fi
