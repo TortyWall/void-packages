@@ -1,0 +1,17 @@
+# Template file for 'nlohmann-json'
+pkgname=nlohmann-json
+version=3.12.0
+revision=1
+build_style=cmake
+configure_args="
+ -DJSON_BuildTests=OFF
+ -DJSON_Install=ON
+"
+hostmakedepends="cmake"
+
+short_desc="JSON for Modern C++"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="MIT"
+homepage="https://github.com/nlohmann/json"
+distfiles="https://github.com/nlohmann/json/archive/refs/tags/v${version}.tar.gz"
+checksum="4b92eb0c06d10683f7447ce9406cb97cd4b453be18d7279320f7b2f025c10187"
