@@ -1,0 +1,80 @@
+# Template file for 'openswos'
+pkgname=openswos
+version=20261031
+revision=1
+
+_gitrev="3881f54b"
+_ggporev="c56fd83e920e0516e2ffc982953ec321dcf11059"
+
+wrksrc="OpenSWOS-${_gitrev}"
+
+build_style=gnu-makefile
+make_build_args="NETPLAY=1 SWOS_TEST_RULES=0"
+
+hostmakedepends="pkg-config"
+makedepends="SDL2-devel"
+
+short_desc="Open-source C port of Sensible World of Soccer"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="GPL-3.0-or-later"
+homepage="https://github.com/benbaker76/OpenSWOS"
+
+archs="x86_64 aarch64"
+
+distfiles="
+ https://github.com/benbaker76/OpenSWOS/archive/${_gitrev}.tar.gz
+ https://github.com/benbaker76/ggpo-x/archive/${_ggporev}.tar.gz
+"
+
+skip_extraction="${_ggporev}.tar.gz"
+
+checksum="
+ 5b6207d0e21e451f801a82c1b2379e9255262e1da4f39488e2a6fb1cbd4fa265
+ a9c5a7627fd0560d05bb70db4fc38474a2820183d8264078a7b12747f1c88e97
+"
+
+post_extract() {
+    mkdir -p "${wrksrc}/third_party/ggpo-x"
+    vsrcextract -C "${wrksrc}/third_party/ggpo-x" \
+        "${_ggporev}.tar.gz"
+}
+
+case "$XBPS_TARGET_MACHINE" in
+    x86_64)
+        make_build_args+=" X86_64=1"
+        ;;
+    aarch64)
+        make_build_args+=" ARM64=1"
+        ;;
+esac
+
+do_build() {
+    make ${make_build_args} -j${XBPS_MAKEJOBS}
+}
+
+do_install() {
+    case "$XBPS_TARGET_MACHINE" in
+        x86_64)
+            bin="SWOS.x86_64"
+            ;;
+        aarch64)
+            bin="SWOS.aarch64"
+            ;;
+    esac
+
+    vbin "bin/${bin}"
+
+    # Einheitlicher Programmname für Desktop und Terminal
+    ln -s "${bin}" "${DESTDIR}/usr/bin/openswos"
+
+    # Anwendungsicon
+    vinstall SWOS.svg 644 \
+        usr/share/icons/hicolor/scalable/apps openswos.svg
+
+    # Desktop-Eintrag
+    vinstall "${FILESDIR}/openswos.desktop" 644 \
+        usr/share/applications
+
+    # Lizenz
+    vinstall LICENSE 644 usr/share/licenses/openswos
+}

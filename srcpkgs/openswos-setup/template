@@ -1,0 +1,208 @@
+# Template file for 'openswos-setup'
+pkgname=openswos-setup
+version=1.0.0
+revision=1
+
+_gitrev="3881f54b"
+_swosgfxrev="f55434620f82f2e469114f81d8d5e0a802d97acb"
+_slintver="1.17.1"
+
+# Native architecture only
+case "$XBPS_MACHINE" in
+    x86_64)
+        _slint_arch="x86_64"
+        ;;
+    aarch64)
+        _slint_arch="arm64"
+        ;;
+    *)
+        broken="Unsupported architecture: ${XBPS_MACHINE}"
+        ;;
+esac
+
+_slint_sdk="Slint-cpp-${_slintver}-Linux-${_slint_arch}.tar.gz"
+_slint_compiler="slint-compiler-Linux-${XBPS_MACHINE}.tar.gz"
+
+_slint_dir="Slint-cpp-${_slintver}-Linux-${_slint_arch}"
+
+wrksrc="OpenSWOS-${_gitrev}"
+
+build_style=gnu-makefile
+
+hostmakedepends="
+ cmake
+ pkgconf
+ bsdtar
+ fontconfig
+"
+
+makedepends="
+ dbus-devel
+ libgbm-devel
+ libinput-devel
+ libxkbcommon-devel
+"
+
+short_desc="Graphical data setup assistant for OpenSWOS"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="GPL-3.0-or-later"
+homepage="https://github.com/benbaker76/OpenSWOS"
+
+archs="x86_64 aarch64"
+nocross="Requires native Slint SDK and compiler binaries"
+
+distfiles="
+ https://github.com/benbaker76/OpenSWOS/archive/${_gitrev}.tar.gz
+ https://github.com/benbaker76/swosgfx/archive/${_swosgfxrev}.tar.gz
+ https://github.com/slint-ui/slint/releases/download/v${_slintver}/${_slint_sdk}
+ https://github.com/slint-ui/slint/releases/download/v${_slintver}/${_slint_compiler}
+"
+
+skip_extraction="
+ ${_swosgfxrev}.tar.gz
+ ${_slint_sdk}
+ ${_slint_compiler}
+"
+
+# Checksums are architecture-dependent.
+# Replace the x86_64 values with the actual SHA256 sums.
+case "$XBPS_MACHINE" in
+    x86_64)
+        checksum="
+        5b6207d0e21e451f801a82c1b2379e9255262e1da4f39488e2a6fb1cbd4fa265
+        773d4d9df101abf57583bd29995d26e62c52bab446066cebc581a60ca590c59a
+        X86_64_SDK_SHA256
+        X86_64_COMPILER_SHA256
+        "
+        ;;
+    aarch64)
+        checksum="
+        5b6207d0e21e451f801a82c1b2379e9255262e1da4f39488e2a6fb1cbd4fa265
+        773d4d9df101abf57583bd29995d26e62c52bab446066cebc581a60ca590c59a
+        7580dca6b2f24d135439dbba33860c041e2db9f17c6cde60000c7af73b420ecf
+        1ab2a6be2f6eff26f8ad016a5fda1965741704fb28b3ffe2534d77ec74d65e2b
+        "
+        ;;
+esac
+
+post_extract() {
+    local srcdir="${XBPS_SRCDISTDIR}/${pkgname}-${version}"
+
+    # swosgfx
+    mkdir -p "${wrksrc}/third_party/swosgfx"
+
+    bsdtar -xf "${srcdir}/${_swosgfxrev}.tar.gz" \
+        --strip-components=1 \
+        -C "${wrksrc}/third_party/swosgfx"
+
+    # Slint C++ SDK
+    mkdir -p "${wrksrc}/.deps/slint"
+
+    bsdtar -xf "${srcdir}/${_slint_sdk}" \
+        -C "${wrksrc}/.deps/slint"
+
+    # Slint compiler
+    mkdir -p "${wrksrc}/.deps/slint-compiler"
+
+    bsdtar -xf "${srcdir}/${_slint_compiler}" \
+        -C "${wrksrc}/.deps/slint-compiler"
+
+    chmod 755 "${wrksrc}/.deps/slint-compiler/slint-compiler"
+
+    # Verify extracted files
+    if [ ! -f "${wrksrc}/.deps/slint/${_slint_dir}/lib/cmake/Slint/SlintConfig.cmake" ]; then
+        msg_error "Slint SDK not found"
+    fi
+
+    if [ ! -x "${wrksrc}/.deps/slint-compiler/slint-compiler" ]; then
+        msg_error "Slint compiler not found"
+    fi
+
+    if [ ! -f "${wrksrc}/third_party/swosgfx/lib/sg_util.h" ]; then
+        msg_error "swosgfx extraction failed"
+    fi
+}
+
+post_patch() {
+    local cmake_file="${wrksrc}/tools/swosdata/CMakeLists.txt"
+
+    # Slint runtime path.
+    vsed -i \
+        's|INSTALL_RPATH "$ORIGIN"|INSTALL_RPATH "$ORIGIN/../lib"|' \
+        "${cmake_file}"
+
+    # Remove previous explicit system library additions.
+    vsed -i \
+        's|target_link_libraries(openswos-setup PRIVATE swosdata_lib Slint::Slint gbm input)|target_link_libraries(openswos-setup PRIVATE swosdata_lib Slint::Slint)|' \
+        "${cmake_file}"
+
+    # Link Slint system dependencies after Slint.
+    vsed -i \
+        '/target_link_libraries(openswos-setup PRIVATE swosdata_lib Slint::Slint)/a target_link_libraries(openswos-setup PRIVATE gbm input xkbcommon)' \
+        "${cmake_file}"
+
+    # Verify modifications.
+    grep -nE 'INSTALL_RPATH|target_link_libraries\(openswos-setup' \
+        "${cmake_file}"
+}
+
+do_build() {
+    local slint_root="${wrksrc}/.deps/slint/${_slint_dir}"
+    local slint_compiler="${wrksrc}/.deps/slint-compiler/slint-compiler"
+
+    cd "${wrksrc}/tools/swosdata"
+
+    "${slint_compiler}" --version
+
+    cmake -S . -B build-void \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DSLINT_ROOT="${slint_root}" \
+        -DSLINT_COMPILER="${slint_compiler}" \
+        -DFETCHCONTENT_FULLY_DISCONNECTED=ON
+
+    cmake --build build-void \
+        --parallel "${XBPS_MAKEJOBS}"
+}
+
+do_install() {
+    local slint_root="${wrksrc}/.deps/slint/${_slint_dir}"
+
+    cd "${wrksrc}/tools/swosdata"
+
+    DESTDIR="${DESTDIR}" cmake --install build-void
+
+    vmkdir usr/bin
+
+    mv "${DESTDIR}/usr/openswos-setup" \
+        "${DESTDIR}/usr/bin/openswos-setup"
+
+    mv "${DESTDIR}/usr/swosdata" \
+        "${DESTDIR}/usr/bin/swosdata"
+
+    # Slint runtime
+    vinstall "${slint_root}/lib/libslint_cpp.so" 755 usr/lib
+
+    # OpenSWOS license
+    vlicense "${wrksrc}/LICENSE"
+
+    # Slint licenses
+    vinstall "${slint_root}/licenses/LICENSE.md" 644 \
+        usr/share/licenses/openswos-setup/slint
+
+    vinstall "${slint_root}/licenses/THIRDPARTY.md" 644 \
+        usr/share/licenses/openswos-setup/slint
+
+	    # Desktop entry.
+    vinstall "${FILESDIR}/openswos-setup.desktop" 644 \
+        usr/share/applications
+
+    # Application icons.
+    for size in 16 22 24 32 48 64 128 256 512; do
+        vinstall \
+            "${wrksrc}/packaging/linux/hicolor/${size}x${size}/apps/openswos.png" \
+            644 \
+            "usr/share/icons/hicolor/${size}x${size}/apps" \
+            openswos-setup.png
+    done
+}

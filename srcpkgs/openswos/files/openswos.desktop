@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=OpenSWOS
+GenericName=Football Game
+Comment=Sensible World of Soccer
+Exec=openswos
+TryExec=openswos
+Icon=openswos
+Terminal=false
+Type=Application
+Categories=Game;SportsGame;
+StartupNotify=true
+Keywords=Football;Soccer;SWOS;Amiga;
