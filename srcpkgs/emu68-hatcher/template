@@ -1,0 +1,36 @@
+# Template file for 'emu68-hatcher'
+pkgname=emu68-hatcher
+version=1.5.0
+revision=1
+build_style=python3-pep517
+hostmakedepends="python3-setuptools python3-wheel"
+depends="
+ python3>=3.10
+ python3-pyside6
+ python3-pyside6-gui
+ python3-pyside6-widgets
+ python3-pydantic
+ python3-Jinja2
+ python3-yaml
+ python3-certifi
+ python3-cryptography
+ python3-packaging
+ python3-pyside6-svg
+"
+short_desc="SD card image builder for PiStorm/Emu68 Amiga systems"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="MIT"
+homepage="https://github.com/rootrootde/emu68-hatcher"
+distfiles="https://github.com/rootrootde/emu68-hatcher/archive/refs/tags/v${version}.tar.gz"
+checksum="8dc038f7ae29566d741899564070b1d03170b3f206e5b2828b193a4aa89c8985"
+
+depends+=" hicolor-icon-theme"
+
+post_install() {
+    vinstall "${wrksrc}/src/main/icons/hatcher-icon.svg" \
+        644 usr/share/icons/hicolor/scalable/apps \
+        emu68-hatcher.svg
+
+    vinstall "${FILESDIR}/emu68-hatcher.desktop" \
+        644 usr/share/applications
+}

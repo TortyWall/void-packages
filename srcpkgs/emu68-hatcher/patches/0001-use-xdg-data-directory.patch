@@ -1,0 +1,14 @@
+--- a/src/main/python/emu68hatcher/utils/paths.py
++++ b/src/main/python/emu68hatcher/utils/paths.py
+@@ -49,7 +49,10 @@
+     home = os.environ.get("HATCHER_HOME")
+     if home:
+         p = Path(home).expanduser().resolve()
+-    elif getattr(sys, "frozen", False):
++    elif (
++        getattr(sys, "frozen", False)
++        or get_platform_info().os == OperatingSystem.LINUX
++    ):
+         p = _user_data_dir()
+     else:
+         # source checkout: store under repo root (5 parents up from this file)

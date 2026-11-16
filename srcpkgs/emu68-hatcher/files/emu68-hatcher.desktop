@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Emu68 Hatcher
+Comment=SD card image builder for PiStorm/Emu68 Amiga systems
+Exec=emu68hatcher
+Icon=emu68-hatcher
+Terminal=false
+Categories=Utility;System;
+StartupNotify=true
