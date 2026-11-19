@@ -1,6 +1,6 @@
 # Template file for 'kappastream'
 pkgname=kappastream
-version=1.0.8
+version=1.1.0
 revision=1
 wrksrc="kappastream-${version}"
 
@@ -36,7 +36,7 @@ license="GPL-3.0-only"
 homepage="https://github.com/kappy7777/kappastream"
 
 distfiles="https://github.com/kappy7777/kappastream/archive/refs/tags/v${version}.tar.gz"
-checksum="39651a119c9d29a03e7a72d68343b1050d328b27e84b285598a49b01fa34c882"
+checksum="8f9249b4dd6b740a8094a58cf05ebb373d22de38bf5270934f7883e3eb6be908"
 
 do_build() {
     export CARGO_HOME="${wrksrc}/.cargo-home"
@@ -45,8 +45,24 @@ do_build() {
     npm ci --no-audit --no-fund
     npm run build
 
-    # Native Tauri application
     cd src-tauri
+
+    # Download Rust dependencies
+    cargo fetch --locked
+
+    # Fix libmpv2 7.0.0
+    local mpv_src
+    mpv_src=$(find "${CARGO_HOME}/registry/src" \
+        -path '*/libmpv2-7.0.0/src/mpv.rs' -print -quit)
+
+    if [ -z "$mpv_src" ]; then
+        msg_error "libmpv2 source not found!"
+        return 1
+    fi
+
+    sed -i \
+        's/CStr::from_ptr(self.name_ptr)/CStr::from_ptr(self.name_ptr.cast())/' \
+        "$mpv_src"
 
     unset CFLAGS CXXFLAGS LDFLAGS RUSTFLAGS
     export AWS_LC_SYS_USE_SYSTEM=0
@@ -91,8 +107,8 @@ do_install() {
         644 usr/share/applications
 
     # AppStream metadata
-    vinstall packaging/shared/dev.kappy.kappastream.metainfo.xml \
-        644 usr/share/metainfo
+    vinstall packaging/shared/io.github.kappy7777.kappastream.metainfo.xml \
+    644 usr/share/metainfo
 
     vlicense LICENSE
 }
