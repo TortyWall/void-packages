@@ -1,13 +1,13 @@
 # Template file for 'ase'
 pkgname=ase
-version=1.14
+version=1.15
 revision=1
 short_desc="Atari ST, Mega ST and STE emulator"
 maintainer="Orphaned <orphan@voidlinux.org>"
 license="GPL-3.0-only"
 homepage="https://github.com/thebitculture/ase"
 distfiles="https://github.com/thebitculture/ase/archive/refs/tags/v${version}.tar.gz"
-checksum="d459928add0689cd16eca337f8b731093ba043e4a6f9e5be86de52dca402b500"
+checksum="80e7e89cf404f920284e29a3e2ccda285e8f38cb7a15c60bf34f411de9026bf7"
 
 # Build-only dependencies. The .NET SDK is downloaded locally.
 hostmakedepends="curl tar libicu78"
@@ -49,19 +49,19 @@ do_build() {
         mv "$tmpfile" "$file"
     done < "$lfs_list"
 
-    # Select the SDK architecture and runtime identifier.
-    dotnet_version=10.0.100
+        # Select the SDK architecture and runtime identifier.
+    dotnet_version=10.0.404
 
     case "$XBPS_TARGET_MACHINE" in
         aarch64)
             dotnet_arch=arm64
             dotnet_rid=linux-arm64
-            dotnet_sdk_sha512="24fc2b105ab8484c34213ef57ac4e6a36a6593241f0ebc6cf0a40ec2f5fea2d76de85c4b87b2a53814d194e32ec1288dd5053cd6f52768d79cd0ac948cbf84ea"
+            dotnet_sdk_sha512="3533a3869da219cac45c567aadac3d8e96cdf1c6a04fe1c1d5fdeefea5d45af8424488f0144730d11b4a751f7ad546fb11e4c2b2725cd8401efee726711f8f11"
             ;;
         x86_64)
             dotnet_arch=x64
             dotnet_rid=linux-x64
-            dotnet_sdk_sha512="f78dbac30c9af2230d67ff5c224de3a5dbf63f8a78d1c206594dedb80e6909d2cc8a9d865d5105c72c2fd2aa266fc0c6c77dedac60408cbccf272b116bd11b07"
+            dotnet_sdk_sha512="577d0eb17fec33d029104c5c63a1ab0accc3e28776274abef2218dbac5af18d2109b5406d26b31d76f5c245215e3ba0926a94c20246c672c41847c9e1eb1dc50"
             ;;
         *)
             msg_error "Unsupported architecture: $XBPS_TARGET_MACHINE"
