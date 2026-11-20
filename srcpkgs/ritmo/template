@@ -1,0 +1,52 @@
+# Template file for 'ritmo'
+pkgname=ritmo
+version=2.8
+revision=1
+build_style=cmake
+configure_args="-DCMAKE_BUILD_TYPE=Release"
+hostmakedepends="cmake pkg-config qt6-base"
+makedepends="qt6-base-devel portaudio-devel rtmidi-devel"
+short_desc="Atari XL/XE POKEY music tracker"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="GPL-3.0-or-later"
+homepage="https://github.com/gianlucarenzi/RITMO-Music-Tracker"
+distfiles="https://github.com/gianlucarenzi/RITMO-Music-Tracker/archive/refs/tags/v${version}.tar.gz"
+wrksrc="RITMO-Music-Tracker-${version}"
+checksum="87f80dd45c1ba62973d60a894ce9116f4fb90567963d0226c941eabb790235ab"
+
+do_install() {
+    # Application
+    vmkdir usr/lib/ritmo
+    vinstall build/out/ritmo 0755 usr/lib/ritmo
+    vcopy build/out/resources usr/lib/ritmo
+
+    # Launcher
+    vmkdir usr/bin
+    cat > ${DESTDIR}/usr/bin/ritmo <<'EOF'
+#!/bin/sh
+exec /usr/lib/ritmo/ritmo "$@"
+EOF
+    chmod 0755 ${DESTDIR}/usr/bin/ritmo
+
+    # Application icon
+    vinstall src/res/ritmo-icon-512.png 0644 \
+        usr/share/icons/hicolor/512x512/apps ritmo.png
+
+    # Desktop entry
+    vmkdir usr/share/applications
+    cat > ${DESTDIR}/usr/share/applications/ritmo.desktop <<'EOF'
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=RITMO
+GenericName=POKEY Music Tracker
+Comment=Atari XL/XE POKEY music tracker
+Exec=ritmo
+Icon=ritmo
+Terminal=false
+Categories=AudioVideo;Audio;Midi;
+EOF
+
+    # License
+    vlicense LICENSE
+}
