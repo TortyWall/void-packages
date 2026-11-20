@@ -13,7 +13,8 @@ configure_args="
  -DCMAKE_BUILD_TYPE=Release
  -DALTIRRA_STATIC_SDL3=OFF
  -DALTIRRA_REQUIRE_SYSTEM_SDL3=ON
- -DALTIRRA_ENABLE_FFMPEG_RECORDING=OFF
+ -DALTIRRA_ENABLE_FFMPEG_RECORDING=ON
+ -DALTIRRA_BRIDGE=ON
 "
 
 hostmakedepends="
@@ -33,7 +34,7 @@ license="GPL-2.0-only"
 homepage="https://github.com/ilmenit/AltirraSDL"
 
 distfiles="https://github.com/ilmenit/AltirraSDL/archive/${_commit}.tar.gz"
-checksum=0824c6eef5cf6316af8e7498b6d6bb40f393fa727814aa9dfbeac1b1d52de681
+checksum="0824c6eef5cf6316af8e7498b6d6bb40f393fa727814aa9dfbeac1b1d52de681"
 
 post_install() {
     vinstall "${FILESDIR}/altirra.desktop" 644 \
