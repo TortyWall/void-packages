@@ -1,6 +1,6 @@
 # Template file for 'dissent'
 pkgname=dissent
-version=0.0.41
+version=0.0.50
 revision=1
 wrksrc="${XBPS_BUILDDIR}"
 archs="aarch64 x86_64"
@@ -8,15 +8,15 @@ archs="aarch64 x86_64"
 case "$XBPS_TARGET_MACHINE" in
     aarch64)
         _arch="arm64"
-        checksum="6e039d69043fc64520f6ce63b3ff378abe0c0b07f84dbd38d9243f5748e6588b"
+        checksum="2cafbdf3008f0d98244f73251485f4844e614048cd087c72286ac90658eda239"
         ;;
     x86_64)
         _arch="amd64"
-        checksum="eb6003d8c2d1b5c28d337279b6abc061e4707900b5e634220e820ba373b901f1"
+        checksum="a9dc0ca5a83c43c21ef4420e55bddc9129c0ad210503805499b61e1f51a5baec"
         ;;
 esac
 
-depends="gtk4 gtksourceview5"
+depends="gtk4 gtksourceview5 libadwaita libwebkitgtk60"
 nopie_files="/usr/bin/dissent"
 short_desc="Native GTK4 Discord client"
 maintainer="Orphaned <orphan@voidlinux.org>"
